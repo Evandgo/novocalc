@@ -4,10 +4,69 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Web App de Aeronaves</title>
-    <link rel="stylesheet" href="styles.css"> <!-- Referência ao arquivo CSS -->
+    <style>
+        /* Estilos CSS incorporados */
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #10004f;
+        }
+
+        h1, h2 {
+            color: #10004f;
+            text-align: center;
+        }
+
+        .login-screen, .dashboard {
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            border-radius: 8px;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        input[type="text"], select {
+            max-width: 600px;
+            width: 100%;
+            padding: 5px;
+            margin: 20px 0;
+            border: 1px solid #10004f;
+            border-radius: 8px;
+        }
+
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: #10004f;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-bottom: 10px;
+        }
+
+        button:hover {
+            background-color: #10004f;
+        }
+
+        .result {
+            margin-top: 20px;
+        }
+
+        #error-message, #hoursError {
+            color: red;
+            text-align: center;
+        }
+
+        .box-criticos {
+            font-weight: bold;
+            color: red;
+        }
+    </style>
 </head>
 <body>
-
     <!-- Tela de Login -->
     <div class="login-screen">
         <h1>Login</h1>
@@ -19,10 +78,7 @@
     <!-- Tela com detalhes após login -->
     <div class="dashboard" style="display: none;">
         <h1>Selecione suas opções</h1>
-
-        <!-- Adicionando a imagem no topo -->
-        <img src="./img/Latam_2.PNG" alt="Logo Latam" style="display: block; margin: 0 auto; max-width: 100%; height: auto;"> </img>
-
+        <img src="./img/Latam_2.PNG" alt="Logo Latam" style="display: block; margin: 0 auto; max-width: 100%; height: auto;">
         <label for="airportSelect">Escolha o aeroporto:</label>
         <select id="airportSelect" onchange="updateVariables()">
             <option value="">--Selecione--</option>
@@ -32,11 +88,10 @@
             <option value="IGU">IGU</option>
         </select>
 
-        <!-- Exibição das BOX Críticos -->
         <div id="boxCriticos" style="margin-top: 20px; font-weight: bold; color: red;"></div>
 
         <label for="aircraftSelect">Escolha a matrícula da aeronave:</label>
-        <select id="aircraftSelect" onchange="updateVariables()"style="margin-top: 20px;">
+        <select id="aircraftSelect" onchange="updateVariables()" style="margin-top: 20px;">
             <option value="">--Selecione--</option>
             <option value="PT-TME">PT-TME</option>
             <option value="PT-TMG">PT-TMG</option>
@@ -105,7 +160,6 @@
             document.getElementById('weight').value = peso;
             horasSolo = document.getElementById('hoursOnGround').value;
 
-            // Atualiza as BOX Críticos
             if (aeroporto) {
                 document.getElementById('boxCriticos').innerText = `BOX Críticos: ${boxCriticos[aeroporto]}`;
             } else {
@@ -126,25 +180,13 @@
 
         function calcular() {
             const custoManobraValores = {
-                "BSB": 45,
-                "GIG": 37,
-                "CNF": 61,
-                "IGU": 65,
-                "GRU": 29
+                "BSB": 45, "GIG": 37, "CNF": 61, "IGU": 65, "GRU": 29
             };
             const custoEstadiaValores = {
-                "BSB": 9,
-                "GIG": 8,
-                "CNF": 13,
-                "IGU": 14,
-                "GRU": 136
+                "BSB": 9, "GIG": 8, "CNF": 13, "IGU": 14, "GRU": 136
             };
             const custoReboqueValores = {
-                "BSB": 0,
-                "GIG": 321,
-                "CNF": 107,
-                "IGU": 189,
-                "GRU": 316
+                "BSB": 0, "GIG": 321, "CNF": 107, "IGU": 189, "GRU": 316
             };
 
             const custoManobra = custoManobraValores[aeroporto] * peso * horasSolo;
@@ -159,11 +201,7 @@
             document.getElementById('custoEstadia').innerText = `Custo de Estadia: R$ ${custoEstadiaResultado.toFixed(2)}`;
             document.getElementById('economia').innerText = `Economia: R$ ${economiaResultado.toFixed(2)}`;
 
-            if (economiaResultado > 0) {
-                fraseEconomia = "Você está economizando!";
-            } else {
-                fraseEconomia = "Cuidado! Você não está economizando.";
-            }
+            fraseEconomia = economiaResultado > 0 ? "Você está economizando!" : "Cuidado! Você não está economizando.";
             document.getElementById('fraseEconomia').innerText = fraseEconomia;
         }
 
@@ -182,29 +220,24 @@
                     economia: economiaResultado,
                     fraseEconomia: fraseEconomia
                 })
-            })
-            .then(response => {
+            }).then(response => {
                 if (response.ok) {
                     alert('Dados enviados com sucesso!');
-                    clearResults();
                 } else {
-                    alert('Erro ao enviar dados. Tente novamente.');
+                    alert('Falha ao enviar os dados.');
                 }
-            })
-            .catch(error => console.error('Erro:', error));
+            });
         }
 
         function clearResults() {
-            document.getElementById('custoManobra').innerText = '';
-            document.getElementById('custoEstadia').innerText = '';
-            document.getElementById('economia').innerText = '';
-            document.getElementById('fraseEconomia').innerText = '';
-            document.getElementById('hoursOnGround').value = '';
-            document.getElementById('airportSelect').value = '';
-            document.getElementById('aircraftSelect').value = '';
-            document.getElementById('weight').value = '';
-            document.getElementById('boxCriticos').innerText = '';
-            horasSolo = '';
+            document.getElementById('airportSelect').selectedIndex = 0;
+            document.getElementById('aircraftSelect').selectedIndex = 0;
+            document.getElementById('weight').value = "";
+            document.getElementById('hoursOnGround').value = "";
+            document.getElementById('custoManobra').innerText = "";
+            document.getElementById('custoEstadia').innerText = "";
+            document.getElementById('economia').innerText = "";
+            document.getElementById('fraseEconomia').innerText = "";
         }
     </script>
 </body>
