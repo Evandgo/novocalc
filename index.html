@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Web App de Aeronaves</title>
+    <link rel="stylesheet" href="styles.css"> <!-- Referência ao arquivo CSS -->
+</head>
+<body>
+
+    <!-- Tela de Login -->
+    <div class="login-screen">
+        <h1>Login</h1>
+        <input type="text" id="userId" placeholder="Insira seu ID">
+        <button onclick="validateId()">Login</button>
+        <div id="error-message" style="display: none;">ID incorreto, tente novamente!</div>
+    </div>
+
+    <!-- Tela com detalhes após login -->
+    <div class="dashboard" style="display: none;">
+        <h1>Selecione suas opções</h1>
+
+        <!-- Adicionando a imagem no topo -->
+        <img src="./img/Latam_2.PNG" alt="Logo Latam" style="display: block; margin: 0 auto; max-width: 100%; height: auto;"> </img>
+
+        <label for="airportSelect">Escolha o aeroporto:</label>
+        <select id="airportSelect" onchange="updateVariables()">
+            <option value="">--Selecione--</option>
+            <option value="BSB">BSB</option>
+            <option value="GIG">GIG</option>
+            <option value="CNF">CNF</option>
+            <option value="IGU">IGU</option>
+        </select>
+
+        <!-- Exibição das BOX Críticos -->
+        <div id="boxCriticos" style="margin-top: 20px; font-weight: bold; color: red;"></div>
+
+        <label for="aircraftSelect">Escolha a matrícula da aeronave:</label>
+        <select id="aircraftSelect" onchange="updateVariables()"style="margin-top: 20px;">
+            <option value="">--Selecione--</option>
+            <option value="PT-TME">PT-TME</option>
+            <option value="PT-TMG">PT-TMG</option>
+            <option value="PT-TML">PT-TML</option>
+            <option value="PR-MHG">PR-MHG</option>
+            <option value="PR-MHJ">PR-MHJ</option>
+            <option value="PR-MHM">PR-MHM</option>
+        </select>
+
+        <label for="weight">Peso:</label>
+        <input type="text" id="weight" readonly>
+
+        <label for="hoursOnGround">Horas de Solo:</label>
+        <input type="text" id="hoursOnGround" placeholder="ex: 5" oninput="validateHoursInput()">
+        <div id="hoursError" style="display: none;">Digite um número inteiro</div>
+
+        <button onclick="calcular()">Calcular</button>
+        <button onclick="sendData()">Enviar</button>
+        <button onclick="clearResults()">Limpar</button>
+
+        <div class="result">
+            <h2>Resultados</h2>
+            <div id="custoManobra"></div>
+            <div id="custoEstadia"></div>
+            <div id="economia"></div>
+            <div id="fraseEconomia" style="margin-top: 20px;"></div>
+        </div>
+    </div>
+
+    <script>
+        let aeroporto, aeronave, peso, horasSolo;
+        let custoManobraResultado, custoEstadiaResultado, economiaResultado, fraseEconomia;
+
+        const boxCriticos = {
+            "BSB": "545L, 658, 221",
+            "GIG": "778, 632R, 752L",
+            "CNF": "653R, 123L, 411R",
+            "IGU": "512, 101, 462L"
+        };
+
+        function validateId() {
+            const validIds = ['3822845', '123456'];
+            const userId = document.getElementById('userId').value;
+            const errorMessage = document.getElementById('error-message');
+            const loginScreen = document.querySelector('.login-screen');
+            const dashboard = document.querySelector('.dashboard');
+
+            if (validIds.includes(userId)) {
+                errorMessage.style.display = 'none';
+                loginScreen.style.display = 'none';
+                dashboard.style.display = 'block';
+            } else {
+                errorMessage.style.display = 'block';
+            }
+        }
+
+        function updateVariables() {
+            aeroporto = document.getElementById('airportSelect').value;
+            aeronave = document.getElementById('aircraftSelect').value;
+            
+            const aircraftWeights = {
+                "PT-TME": 64, "PT-TMG": 76, "PT-TML": 70,
+                "PR-MHG": 77, "PR-MHJ": 70, "PR-MHM": 77
+            };
+            peso = aircraftWeights[aeronave] || "";
+            document.getElementById('weight').value = peso;
+            horasSolo = document.getElementById('hoursOnGround').value;
+
+            // Atualiza as BOX Críticos
+            if (aeroporto) {
+                document.getElementById('boxCriticos').innerText = `BOX Críticos: ${boxCriticos[aeroporto]}`;
+            } else {
+                document.getElementById('boxCriticos').innerText = '';
+            }
+        }
+
+        function validateHoursInput() {
+            const input = document.getElementById('hoursOnGround');
+            const hoursError = document.getElementById('hoursError');
+            if (isNaN(input.value) || input.value.includes('.')) {
+                hoursError.style.display = 'block';
+            } else {
+                hoursError.style.display = 'none';
+                horasSolo = input.value;
+            }
+        }
+
+        function calcular() {
+            const custoManobraValores = {
+                "BSB": 45,
+                "GIG": 37,
+                "CNF": 61,
+                "IGU": 65,
+                "GRU": 29
+            };
+            const custoEstadiaValores = {
+                "BSB": 9,
+                "GIG": 8,
+                "CNF": 13,
+                "IGU": 14,
+                "GRU": 136
+            };
+            const custoReboqueValores = {
+                "BSB": 0,
+                "GIG": 321,
+                "CNF": 107,
+                "IGU": 189,
+                "GRU": 316
+            };
+
+            const custoManobra = custoManobraValores[aeroporto] * peso * horasSolo;
+            const custoEstadia = (custoEstadiaValores[aeroporto] * peso * horasSolo) + (custoReboqueValores[aeroporto] * 2);
+            const economia = custoManobra - custoEstadia;
+
+            custoManobraResultado = custoManobra;
+            custoEstadiaResultado = custoEstadia;
+            economiaResultado = economia;
+
+            document.getElementById('custoManobra').innerText = `Custo de Manobra: R$ ${custoManobraResultado.toFixed(2)}`;
+            document.getElementById('custoEstadia').innerText = `Custo de Estadia: R$ ${custoEstadiaResultado.toFixed(2)}`;
+            document.getElementById('economia').innerText = `Economia: R$ ${economiaResultado.toFixed(2)}`;
+
+            if (economiaResultado > 0) {
+                fraseEconomia = "Você está economizando!";
+            } else {
+                fraseEconomia = "Cuidado! Você não está economizando.";
+            }
+            document.getElementById('fraseEconomia').innerText = fraseEconomia;
+        }
+
+        function sendData() {
+            const scriptURL = 'https://script.google.com/macros/s/AKfycby5cZnfVKc9lQZenRyD_75F-dwjiyvlhyoSCUi1pD0ebLkIylcp8JHgyaRil37aePEB/exec';
+
+            fetch(scriptURL, {
+                method: 'POST',
+                body: new URLSearchParams({
+                    aeroporto: aeroporto,
+                    aeronave: aeronave,
+                    peso: peso,
+                    horasSolo: horasSolo,
+                    custoManobra: custoManobraResultado,
+                    custoEstadia: custoEstadiaResultado,
+                    economia: economiaResultado,
+                    fraseEconomia: fraseEconomia
+                })
+            })
+            .then(response => {
+                if (response.ok) {
+                    alert('Dados enviados com sucesso!');
+                    clearResults();
+                } else {
+                    alert('Erro ao enviar dados. Tente novamente.');
+                }
+            })
+            .catch(error => console.error('Erro:', error));
+        }
+
+        function clearResults() {
+            document.getElementById('custoManobra').innerText = '';
+            document.getElementById('custoEstadia').innerText = '';
+            document.getElementById('economia').innerText = '';
+            document.getElementById('fraseEconomia').innerText = '';
+            document.getElementById('hoursOnGround').value = '';
+            document.getElementById('airportSelect').value = '';
+            document.getElementById('aircraftSelect').value = '';
+            document.getElementById('weight').value = '';
+            document.getElementById('boxCriticos').innerText = '';
+            horasSolo = '';
+        }
+    </script>
+</body>
+</html>
