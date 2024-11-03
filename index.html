@@ -125,7 +125,7 @@
     <script>
         let aeroporto, aeronave, peso, horasSolo;
         let custoManobraResultado, custoEstadiaResultado, economiaResultado, fraseEconomia;
-    
+
         const boxCriticos = {
             "BSB": "545L, 658, 221",
             "GIG": "778, 632R, 752L",
@@ -133,14 +133,14 @@
             "IGU": "512, 101, 462L",
             "GRU": "612, 304, 503"
         };
-    
+
         function validateId() {
             const validIds = ['3822845', '123456'];
             const userId = document.getElementById('userId').value;
             const errorMessage = document.getElementById('error-message');
             const loginScreen = document.querySelector('.login-screen');
             const dashboard = document.querySelector('.dashboard');
-    
+
             if (validIds.includes(userId)) {
                 errorMessage.style.display = 'none';
                 loginScreen.style.display = 'none';
@@ -149,7 +149,7 @@
                 errorMessage.style.display = 'block';
             }
         }
-    
+
         function updateVariables() {
             aeroporto = document.getElementById('airportSelect').value;
             aeronave = document.getElementById('aircraftSelect').value;
@@ -161,65 +161,86 @@
             peso = aircraftWeights[aeronave] || "";
             document.getElementById('weight').value = peso;
             horasSolo = document.getElementById('hoursOnGround').value;
-    
+
             if (aeroporto) {
                 document.getElementById('boxCriticos').innerText = `BOX Críticos: ${boxCriticos[aeroporto]}`;
             } else {
                 document.getElementById('boxCriticos').innerText = '';
             }
         }
-    
+
         function validateHoursInput() {
             const input = document.getElementById('hoursOnGround');
             const hoursError = document.getElementById('hoursError');
-    
             if (isNaN(input.value) || input.value.includes('.')) {
                 hoursError.style.display = 'block';
-                hoursError.innerText = "Digite um número inteiro";
-            } else if (parseInt(input.value) <= 3) {
-                hoursError.style.display = 'block';
-                hoursError.innerText = "Insira valor maior que 3";
             } else {
                 hoursError.style.display = 'none';
-                horasSolo = parseInt(input.value);
+                horasSolo = input.value;
             }
         }
-    
+
         function calcular() {
-            if (horasSolo <= 3) {
-                document.getElementById('hoursError').style.display = 'block';
-                document.getElementById('hoursError').innerText = "Insira valor maior que 3";
-                return;
-            }
-    
-            const horasSoloAjustado = horasSolo - 3;
-    
             const custoManobraValores = {
-                "BSB": 2, "GIG": 4, "CNF": 4, "IGU": 3, "GRU": 2
+                "BSB": 1.91, "GIG": 1.9854, "CNF": 1.9608, "IGU": 2.76, "GRU": 1.9453
             };
             const custoEstadiaValores = {
-                "BSB": 4, "GIG": 4, "CNF": 4, "IGU": 1, "GRU": 1
+                "BSB": 0.4064, "GIG": 0.4215, "CNF": 0.4161, "IGU": 0.59, "GRU": 0.4128
             };
             const custoReboqueValores = {
-                "BSB": 0, "GIG": 321, "CNF": 106, "IGU": 189, "GRU": 320
+                "BSB": 316.23, "GIG": 321, "CNF": 106, "IGU": 189, "GRU": 316.23
             };
-    
-            const custoManobra = custoManobraValores[aeroporto] * peso * horasSoloAjustado;
-            const custoEstadia = (custoEstadiaValores[aeroporto] * peso * horasSoloAjustado) + (custoReboqueValores[aeroporto] * 2);
+
+            const custoManobra = custoManobraValores[aeroporto] * peso * (horasSolo-3);
+            const custoEstadia = (custoEstadiaValores[aeroporto] * peso * (horasSolo-3)) + (custoReboqueValores[aeroporto] * 2);
             const economia = custoManobra - custoEstadia;
-    
+
             custoManobraResultado = custoManobra;
             custoEstadiaResultado = custoEstadia;
             economiaResultado = economia;
-    
+
             document.getElementById('custoManobra').innerText = `Custo de Manobra: R$ ${custoManobraResultado.toFixed(2)}`;
             document.getElementById('custoEstadia').innerText = `Custo de Estadia: R$ ${custoEstadiaResultado.toFixed(2)}`;
             document.getElementById('economia').innerText = `Economia: R$ ${economiaResultado.toFixed(2)}`;
-    
+
             fraseEconomia = economiaResultado > 0 ? "MOVIMENTAR PARA POSIÇÃO DE ESTACIONAMENTO" : "PERMANECER EM POSIÇÃO DE MANOBRAS";
             document.getElementById('fraseEconomia').innerText = fraseEconomia;
         }
+
+        function sendData() {
+            const scriptURL = 'https://script.google.com/macros/s/AKfycby5cZnfVKc9lQZenRyD_75F-dwjiyvlhyoSCUi1pD0ebLkIylcp8JHgyaRil37aePEB/exec';
+
+            fetch(scriptURL, {
+                method: 'POST',
+                body: new URLSearchParams({
+                    aeroporto: aeroporto,
+                    aeronave: aeronave,
+                    peso: peso,
+                    horasSolo: horasSolo,
+                    custoManobra: custoManobraResultado,
+                    custoEstadia: custoEstadiaResultado,
+                    economia: economiaResultado,
+                    fraseEconomia: fraseEconomia
+                })
+            }).then(response => {
+                if (response.ok) {
+                    alert('Dados enviados com sucesso!');
+                } else {
+                    alert('Falha ao enviar os dados.');
+                }
+            });
+        }
+
+        function clearResults() {
+            document.getElementById('airportSelect').selectedIndex = 0;
+            document.getElementById('aircraftSelect').selectedIndex = 0;
+            document.getElementById('weight').value = "";
+            document.getElementById('hoursOnGround').value = "";
+            document.getElementById('custoManobra').innerText = "";
+            document.getElementById('custoEstadia').innerText = "";
+            document.getElementById('economia').innerText = "";
+            document.getElementById('fraseEconomia').innerText = "";
+        }
     </script>
-    
 </body>
 </html>
