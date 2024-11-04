@@ -100,6 +100,9 @@
             <option value="PR-MHG">PR-MHG</option>
             <option value="PR-MHJ">PR-MHJ</option>
             <option value="PR-MHM">PR-MHM</option>
+            <option value="PT-MXH">PT-MXH</option>
+            <option value="PT-MUB">PT-MUB</option>
+            <option value="CC-BBF">CC-BBF</option>
         </select>
 
         <label for="weight">Peso:</label>
@@ -156,7 +159,8 @@
             
             const aircraftWeights = {
                 "PT-TME": 64, "PT-TMG": 76, "PT-TML": 70,
-                "PR-MHG": 77, "PR-MHJ": 70, "PR-MHM": 77
+                "PR-MHG": 77, "PR-MHJ": 70, "PR-MHM": 77,
+                "PT-MXH": 89, "PT-MUB": 347, "CC-BBF": 228,
             };
             peso = aircraftWeights[aeronave] || "";
             document.getElementById('weight').value = peso;
