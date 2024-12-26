@@ -103,6 +103,9 @@
             <option value="PT-MXH">PT-MXH</option>
             <option value="PT-MUB">PT-MUB</option>
             <option value="CC-BBF">CC-BBF</option>
+            <option value="PT-MUD">CC-BBF</option>
+            <option value="PR-MYW">CC-BBF</option>
+            <option value="PT-XPM">CC-BBF</option>
         </select>
 
         <label for="weight">Peso:</label>
@@ -161,7 +164,8 @@
                 "PT-TME": 64, "PT-TMG": 76, "PT-TML": 70,
                 "PR-MHG": 77, "PR-MHJ": 70, "PR-MHM": 77,
                 "PT-MXH": 89, "PT-MUB": 347, "CC-BBF": 228,
-                "PR-MYW": 77, "PT-MUD": 347, "PT-XPM": 89, 
+                "PR-MYW": 77,  "PT-MUD": 347,  "PT-XPM": 89,
+                
             };
             peso = aircraftWeights[aeronave] || "";
             document.getElementById('weight').value = peso;
