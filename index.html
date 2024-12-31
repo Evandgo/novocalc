@@ -71,11 +71,9 @@
     <div class="login-screen">
         <h1>Login</h1>
         <input type="text" id="userId" placeholder="Insira seu ID">
-        <input type="password" id="password" placeholder="Insira sua senha">
         <button onclick="validateId()">Login</button>
-        <div id="error-message" style="display: none;">ID ou senha incorretos, tente novamente!</div>
+        <div id="error-message" style="display: none;">ID incorreto, tente novamente!</div>
     </div>
-
 
     <!-- Tela com detalhes após login -->
     <div class="dashboard" style="display: none;">
@@ -288,27 +286,20 @@
         };
 
         function validateId() {
-    const validCredentials = {
-        '3822845': '050589',
-        '123456': 'diego'
-    };
-    
-    const userId = document.getElementById('userId').value;
-    const password = document.getElementById('password').value;
-    const errorMessage = document.getElementById('error-message');
-    const loginScreen = document.querySelector('.login-screen');
-    const dashboard = document.querySelector('.dashboard');
+            const validIds = ['3822845', '123456'];
+            const userId = document.getElementById('userId').value;
+            const errorMessage = document.getElementById('error-message');
+            const loginScreen = document.querySelector('.login-screen');
+            const dashboard = document.querySelector('.dashboard');
 
-    // Verifica se o ID existe e se a senha corresponde
-    if (validCredentials[userId] === password) {
-        errorMessage.style.display = 'none';
-        loginScreen.style.display = 'none';
-        dashboard.style.display = 'block';
-    } else {
-        errorMessage.style.display = 'block';
-    }
-}
-
+            if (validIds.includes(userId)) {
+                errorMessage.style.display = 'none';
+                loginScreen.style.display = 'none';
+                dashboard.style.display = 'block';
+            } else {
+                errorMessage.style.display = 'block';
+            }
+        }
 
         function updateVariables() {
             aeroporto = document.getElementById('airportSelect').value;
