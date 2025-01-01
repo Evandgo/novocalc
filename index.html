@@ -222,13 +222,13 @@
              fetch(scriptURL, {
                 method: 'POST',
                 body: new URLSearchParams(formattedData)
-    }).then(response => {
-        if (response.ok) {
-            alert('Dados enviados com sucesso!');
-        } else {
-            alert('Falha ao enviar os dados.');
-        }
-    });
+            }).then(response => {
+                if (response.ok) {
+                    alert('Dados enviados com sucesso!');
+            } else {
+                alert('Falha ao enviar os dados.');
+            }
+            });
 }
 
         function clearResults() {
