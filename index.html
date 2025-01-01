@@ -205,27 +205,31 @@
 
         function sendData() {
             const scriptURL = 'https://script.google.com/macros/s/AKfycby5cZnfVKc9lQZenRyD_75F-dwjiyvlhyoSCUi1pD0ebLkIylcp8JHgyaRil37aePEB/exec';
+            // Formatação dos dados antes do envio
 
-            fetch(scriptURL, {
+            const formattedData = {
+                aeroporto: aeroporto,
+                aeronave: aeronave,
+                peso: peso,
+                horasSolo: horasSolo,
+                custoManobra: Number(custoManobraResultado.toFixed(2)),
+                custoEstadia: Number(custoEstadiaResultado.toFixed(2)),
+                economia: Number(economiaResultado.toFixed(2)),
+                fraseEconomia: fraseEconomia
+             };
+
+             // Envio dos dados usando fetch
+             fetch(scriptURL, {
                 method: 'POST',
-                body: new URLSearchParams({
-                    aeroporto: aeroporto,
-                    aeronave: aeronave,
-                    peso: peso,
-                    horasSolo: horasSolo,
-                    custoManobra: custoManobraResultado,
-                    custoEstadia: custoEstadiaResultado,
-                    economia: economiaResultado,
-                    fraseEconomia: fraseEconomia
-                })
-            }).then(response => {
-                if (response.ok) {
-                    alert('Dados enviados com sucesso!');
-                } else {
-                    alert('Falha ao enviar os dados.');
-                }
-            });
+                body: new URLSearchParams(formattedData)
+    }).then(response => {
+        if (response.ok) {
+            alert('Dados enviados com sucesso!');
+        } else {
+            alert('Falha ao enviar os dados.');
         }
+    });
+}
 
         function clearResults() {
             document.getElementById('airportSelect').selectedIndex = 0;
