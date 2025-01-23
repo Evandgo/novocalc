@@ -382,6 +382,12 @@
         }
 
         function calcular() {
+            // Validando se o valor inserido é menor ou igual a 3
+            if(parseInt(horasSolo) <= 3){
+                alert('Insira um valor maior que 3');
+                return;
+            }
+            
             const custoManobraValores = {
                 "BSB": 1.91, "GIG": 1.9854, "CNF": 1.9608, "IGU": 2.76, "GRU": 1.9453
             };
